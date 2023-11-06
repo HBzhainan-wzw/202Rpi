@@ -11,7 +11,7 @@ def build_ffmpeg_command(input_device, framerate, video_size, output_address, ou
 input_device = '/dev/video0'      # Your camera device path
 framerate = '25'                  # Frames per second
 video_size = '640x480'            # Video resolution
-output_address = '192.168.1.100'  # IP address of the destination computer
+output_address = '192.168.83.228'  # IP address of the destination computer
 output_port = '1234'              # Port number for the stream
 
 # Build the ffmpeg command
