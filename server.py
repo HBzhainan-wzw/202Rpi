@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import socket
 import time
 
@@ -10,9 +12,19 @@ video_config = picam2.create_video_configuration({"size": (1280, 720)})
 picam2.configure(video_config)
 encoder = H264Encoder(1000000)
 
-with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-    sock.connect(("REMOTEIP", 10001))
-    stream = sock.makefile("wb")
-    picam2.start_recording(encoder, FileOutput(stream))
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(("0.0.0.0", 10001))
+    sock.listen()
+
+    picam2.encoders = encoder
+
+    conn, addr = sock.accept()
+    stream = conn.makefile("wb")
+    encoder.output = FileOutput(stream)
+    picam2.start_encoder(encoder)
+    picam2.start()
     time.sleep(20)
-    picam2.stop_recording()
+    picam2.stop()
+    picam2.stop_encoder()
+    conn.close()
